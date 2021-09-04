@@ -9,14 +9,26 @@
 #include <string>
 #include <vector>
 #include <msclr\marshal_cppstd.h>
-
+#include <Windows.h>
+#include <direct.h>
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <experimental/filesystem>
 
 #define SPE ':'
 #define END "__FIN.omn"
 #define EXTENSION ".vcb"
 #define PATH "D:\Recording\\"
 #define FILE_PATH "Setting.txt"
+#define File_Path Setting.txt
 #define SIGN "vocabella_program_by_ohmona_0.1"
+
+#ifdef UNICODE
+#define GetCurrentDirectory GetCurrentDirectoryW
+#else
+#define GetCurrentDirectory GetCurrentDirectoryA
+#endif
+
+namespace fs = std::experimental::filesystem;
 
 namespace Notification {
 
@@ -43,8 +55,7 @@ namespace Notification {
 	public: void UpdatePath(std::string);
 	public: System::String^ GetPath();
 	public: void ChangePath(System::String^ str);
-
-
+	public: std::string GetProgramPath();
 	public:
 
 	public:
@@ -55,6 +66,9 @@ namespace Notification {
 	private: System::Windows::Forms::ToolStripMenuItem^ testToolStripMenuItem;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ changeDirectoryCtrlShiftSToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ infoToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ vocByOhmonaToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ version01PreleaseToolStripMenuItem;
 	public:
 
 	public:
@@ -67,9 +81,8 @@ namespace Notification {
 			//
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
+			std::cout << GetProgramPath() << std::endl;
 			ProgramFiles();
-			//자동으로 만드는중
-			// ChangePath();
 			ReadFile();
 		}
 
@@ -144,6 +157,9 @@ namespace Notification {
 			this->FileMenu = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->testToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->changeDirectoryCtrlShiftSToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->infoToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->vocByOhmonaToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->version01PreleaseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -226,7 +242,7 @@ namespace Notification {
 			// 
 			// menuStrip1
 			// 
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->FileMenu });
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) { this->FileMenu, this->infoToolStripMenuItem });
 			resources->ApplyResources(this->menuStrip1, L"menuStrip1");
 			this->menuStrip1->Name = L"menuStrip1";
 			// 
@@ -250,6 +266,26 @@ namespace Notification {
 			this->changeDirectoryCtrlShiftSToolStripMenuItem->Name = L"changeDirectoryCtrlShiftSToolStripMenuItem";
 			resources->ApplyResources(this->changeDirectoryCtrlShiftSToolStripMenuItem, L"changeDirectoryCtrlShiftSToolStripMenuItem");
 			this->changeDirectoryCtrlShiftSToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::changeDirectoryCtrlShiftSToolStripMenuItem_Click);
+			// 
+			// infoToolStripMenuItem
+			// 
+			this->infoToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->vocByOhmonaToolStripMenuItem,
+					this->version01PreleaseToolStripMenuItem
+			});
+			this->infoToolStripMenuItem->Name = L"infoToolStripMenuItem";
+			resources->ApplyResources(this->infoToolStripMenuItem, L"infoToolStripMenuItem");
+			// 
+			// vocByOhmonaToolStripMenuItem
+			// 
+			this->vocByOhmonaToolStripMenuItem->Name = L"vocByOhmonaToolStripMenuItem";
+			resources->ApplyResources(this->vocByOhmonaToolStripMenuItem, L"vocByOhmonaToolStripMenuItem");
+			// 
+			// version01PreleaseToolStripMenuItem
+			// 
+			this->version01PreleaseToolStripMenuItem->Name = L"version01PreleaseToolStripMenuItem";
+			resources->ApplyResources(this->version01PreleaseToolStripMenuItem, L"version01PreleaseToolStripMenuItem");
+			this->version01PreleaseToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::version01PreleaseToolStripMenuItem_Click);
 			// 
 			// MyForm
 			// 
@@ -313,6 +349,8 @@ private: System::Void dataGridView1_RowsAdded(System::Object^ sender, System::Wi
 }
 private: System::Void dataGridView1_RowsRemoved(System::Object^ sender, System::Windows::Forms::DataGridViewRowsRemovedEventArgs^ e) {
 	Row--;
+}
+private: System::Void version01PreleaseToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 }
 };
 }

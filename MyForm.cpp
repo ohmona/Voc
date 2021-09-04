@@ -144,7 +144,7 @@ void Notification::MyForm::SaveFile() {
 void Notification::MyForm::ProgramFiles()
 {
 	std::ifstream readFile;
-	readFile.open(FILE_PATH);
+	readFile.open(GetProgramPath() + FILE_PATH, std::ifstream::in);
 	std::string content;
 
 	if (readFile.is_open()) {
@@ -157,24 +157,32 @@ void Notification::MyForm::ProgramFiles()
 	}
 	else {
 		// 시스템 파일이 없을 경우, 기본값 적용
-		std::ofstream creator;
-		creator.open(FILE_PATH);
-		creator << "";
-		if (creator.is_open()) {
-			creator << msclr::interop::marshal_as<std::string>(GetPath());
-			// Path
-			// number?
+		if (fs::exists(GetProgramPath())) {
+			Console::WriteLine("FOLDER EXSIST!");
+			std::ofstream creator;
+			creator.open(GetProgramPath() + FILE_PATH, std::ofstream::out);
+			creator << "";
+			if (creator.is_open()) {
+				creator << msclr::interop::marshal_as<std::string>(GetPath());
+				// Path
+				// number?
+			}
+			else {
+				Console::WriteLine("THIS IS ERROR");
+			}
+			creator.close();
 		}
 		else {
-			Console::WriteLine("THIS IS ERROR");
+			Console::WriteLine("FOLDER NOT EXSIST! CREATE A FOLDER");
+			fs::create_directory(GetProgramPath());
+			ProgramFiles();
 		}
-		creator.close();
 	}
 }
 
 void Notification::MyForm::UpdatePath(std::string str) {
 	std::ofstream creator;
-	creator.open(FILE_PATH);
+	creator.open(GetProgramPath() + FILE_PATH, std::ofstream::out);
 
 	creator << str;
 }
@@ -214,4 +222,15 @@ void Notification::MyForm::ChangePath(System::String^ str)
 {
 	originPath = str;
 	MyForm::Text = originPath;
+}
+
+std::string Notification::MyForm::GetProgramPath()
+{
+	/*
+	char buff[FILENAME_MAX];
+	const char buffer2[12] = FILE_PATH;
+	_getcwd(buff, FILENAME_MAX);
+	std::string current_working_dir(buff);*/
+	System::String^ path = gcnew String(getenv("APPDATA")) + "\\Voc\\";
+	return msclr::interop::marshal_as<std::string>(path);
 }
