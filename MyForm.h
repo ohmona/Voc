@@ -2,15 +2,12 @@
 
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 #include<iostream>
 #include<fstream>
-#include <typeinfo>
 #include <string>
 #include <vector>
 #include <msclr\marshal_cppstd.h>
 #include <Windows.h>
-#include <direct.h>
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 
@@ -21,6 +18,9 @@
 #define FILE_PATH "Setting.txt"
 #define File_Path Setting.txt
 #define SIGN "vocabella_program_by_ohmona_0.1"
+#define DGV Notification::MyForm::dataGridview1;
+
+#define TEST Console::WriteLine("tset");
 
 #ifdef UNICODE
 #define GetCurrentDirectory GetCurrentDirectoryW
@@ -56,7 +56,8 @@ namespace Notification {
 	public: System::String^ GetPath();
 	public: void ChangePath(System::String^ str);
 	public: std::string GetProgramPath();
-	public:
+	public: std::string ToStdString(System::String^ str);
+	public: System::String^ ToSystemString(std::string str);
 
 	public:
 		int Row = 1;
@@ -216,9 +217,13 @@ namespace Notification {
 				static_cast<System::Byte>(0)));
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle7;
 			this->dataGridView1->RowTemplate->Height = 26;
-			this->dataGridView1->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellContentClick);
+			this->dataGridView1->CellEndEdit += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellEndEdit);
+			this->dataGridView1->CellValueChanged += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellValueChanged);
+			this->dataGridView1->CurrentCellDirtyStateChanged += gcnew System::EventHandler(this, &MyForm::dataGridView1_CurrentCellDirtyStateChanged);
+			this->dataGridView1->EditingControlShowing += gcnew System::Windows::Forms::DataGridViewEditingControlShowingEventHandler(this, &MyForm::dataGridView1_EditingControlShowing);
 			this->dataGridView1->RowsAdded += gcnew System::Windows::Forms::DataGridViewRowsAddedEventHandler(this, &MyForm::dataGridView1_RowsAdded);
 			this->dataGridView1->RowsRemoved += gcnew System::Windows::Forms::DataGridViewRowsRemovedEventHandler(this, &MyForm::dataGridView1_RowsRemoved);
+			this->dataGridView1->ControlRemoved += gcnew System::Windows::Forms::ControlEventHandler(this, &MyForm::dataGridView1_ControlRemoved);
 			this->dataGridView1->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
 			// 
 			// Deutsch
@@ -306,8 +311,7 @@ namespace Notification {
 
 		}
 #pragma endregion
-private: System::Void dataGridView1_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
-}
+
 private: System::Void richTextBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void Click_Save(System::Object^ sender, System::EventArgs^ e) {
@@ -352,5 +356,77 @@ private: System::Void dataGridView1_RowsRemoved(System::Object^ sender, System::
 }
 private: System::Void version01PreleaseToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 }
+private: System::Void dataGridView1_ControlRemoved(System::Object^ sender, System::Windows::Forms::ControlEventArgs^ e) {
+}
+private: System::Void dataGridView1_CellValueChanged(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+}
+private: System::Void dataGridView1_CurrentCellDirtyStateChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void dataGridView1_EditingControlShowing(System::Object^ sender, System::Windows::Forms::DataGridViewEditingControlShowingEventArgs^ e) {
+	TEST
+}
+private: System::Void dataGridView1_CellEndEdit(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+	
+}
 };
+}
+
+namespace MyArea {
+	std::string ToStdString(System::String^ str);
+	System::String^ ToSystemString(std::string str);
+	namespace File {
+		// 세이브 파일을 관리
+		static class SaveFile {
+		public:
+			void Save();
+			void Read();
+			void ChangeOpenedFile();
+		};
+		// 프로그램 파일 관리
+		static class ProgramFile {
+		private:
+			std::ifstream FileReader; //= FileReader.open(GetPPath() + FILE_PATH, std::ifstream::in); // warning
+			std::string buffer;
+		public:
+			void MakePFile();
+			void MakePFolder();
+			void ReadPFile();
+			void UpdateDefaultPath(); // UpdatePath()
+			System::String^ GetPathFromDialog();
+			void ChangePath(System::String^ str);
+			std::string GetPPath();
+		public:
+			ProgramFile();
+		};
+	}
+
+	namespace Data {
+		// 파일에서 나온 데이터를 정리
+		public class Content {
+		public:
+			std::string content;
+			std::vector<std::string> contents;
+		public:
+			std::string SplitContent();
+		public:
+			Content(std::string content);
+		};
+
+		// 화면에 있는 dgv
+		static class DataGridView {
+		public:
+			int Row = 0;
+		public:
+			void AddRow();
+			void AddItem(int Yindex, int Xindex);
+		};
+	}
+}
+
+std::string MyArea::ToStdString(System::String^ str) {
+	return msclr::interop::marshal_as<std::string>(str);
+}
+
+System::String^ MyArea::ToSystemString(std::string str) {
+	return gcnew String(str.c_str());
 }

@@ -9,7 +9,7 @@ using namespace System::Windows::Forms;
 
 void main(array<String^>^ args) {
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 
@@ -21,7 +21,7 @@ void main(array<String^>^ args) {
 
 void Notification::MyForm::AddItem(DataGridView^ dgv, std::string content, int index) {
 
-	String^ str = gcnew String(content.c_str());
+	String^ str = ToSystemString(content);
 
 	array<String^>^ arr = str->Split(SPE);
 
@@ -45,10 +45,10 @@ void Notification::MyForm::AddItem(DataGridView^ dgv, std::string content, int i
 }
 
 void Notification::MyForm::ReadFile() {
-	UpdatePath(msclr::interop::marshal_as<std::string>(originPath->ToString()));
+	UpdatePath(ToStdString(originPath->ToString()));
 	System::String^ path = originPath;//s + richTextBox1->Text + EXTENSION;
 	std::ifstream readFile;
-	readFile.open(msclr::interop::marshal_as<std::string>(path));;
+	readFile.open(ToStdString(path));;
 
 	DataGridView^ dgv = dataGridView1;
 
@@ -56,7 +56,7 @@ void Notification::MyForm::ReadFile() {
 
 	if (readFile.is_open()) {
 		std::cout << "파일이 열렸습니다 : inputStream" << std::endl;
-		std::cout << "경로 : " << msclr::interop::marshal_as<std::string>(path) << std::endl;
+		std::cout << "경로 : " << ToStdString(path) << std::endl;
 		Row = 1;
 		int index = 0;
 		dgv->Rows->Clear();
@@ -85,7 +85,6 @@ void Notification::MyForm::AddRow() {
 	DataGridView^ dgv = dataGridView1;
 	dgv->Rows->Add();
 	Row++;
-	// Console::WriteLine("Row added : " + Row);
 }
 
 //void Notification::MyForm::ReadFile(System::String^ path) {
@@ -97,11 +96,11 @@ void Notification::MyForm::AddRow() {
 
 void Notification::MyForm::SaveFile() {
 	System::String^ path = originPath;
-	std::ofstream out(msclr::interop::marshal_as<std::string>(path));
+	std::ofstream out(ToStdString(path));
 
 	if (out.is_open()) {
 		std::cout << "파일이 열렸습니다 : outputStream" << std::endl;
-		std::cout << "경로 : " << msclr::interop::marshal_as<std::string>(path) << std::endl;
+		std::cout << "경로 : " << ToStdString(path) << std::endl;
 		for (int i = 0; i < Row; i++) {
 			// 파일이 없으면 여기까지 접근 안됌
 
@@ -112,14 +111,12 @@ void Notification::MyForm::SaveFile() {
 			bool succeed = false;
 			if (dataGridView1->Rows[i]->Cells[0]->Value) {
 				first = dataGridView1->Rows[i]->Cells[0]->Value->ToString();
-				str1 = msclr::interop::marshal_as<std::string>(first);
-				// Console::WriteLine("first succeed");
+				str1 = ToStdString(first);
 				succeed = true;
 			}
 			if (dataGridView1->Rows[i]->Cells[1]->Value) {
 				second = dataGridView1->Rows[i]->Cells[1]->Value->ToString();
-				str2 = msclr::interop::marshal_as<std::string>(second);
-				// Console::WriteLine("second succeed");
+				str2 = ToStdString(second);
 				succeed = true;
 			}
 			if (succeed) {
@@ -152,7 +149,7 @@ void Notification::MyForm::ProgramFiles()
 		while (!readFile.eof()) {
 			getline(readFile, content);
 			std::cout << "내용 : " << content << std::endl;
-			ChangePath(gcnew String(content.c_str()));
+			ChangePath(ToSystemString(content));
 		}
 	}
 	else {
@@ -163,7 +160,7 @@ void Notification::MyForm::ProgramFiles()
 			creator.open(GetProgramPath() + FILE_PATH, std::ofstream::out);
 			creator << "";
 			if (creator.is_open()) {
-				creator << msclr::interop::marshal_as<std::string>(GetPath());
+				creator << ToStdString(GetPath());
 				// Path
 				// number?
 			}
@@ -226,11 +223,16 @@ void Notification::MyForm::ChangePath(System::String^ str)
 
 std::string Notification::MyForm::GetProgramPath()
 {
-	/*
-	char buff[FILENAME_MAX];
-	const char buffer2[12] = FILE_PATH;
-	_getcwd(buff, FILENAME_MAX);
-	std::string current_working_dir(buff);*/
 	System::String^ path = gcnew String(getenv("APPDATA")) + "\\Voc\\";
-	return msclr::interop::marshal_as<std::string>(path);
+	return ToStdString(path);
+}
+
+std::string Notification::MyForm::ToStdString(System::String^ str)
+{
+	return msclr::interop::marshal_as<std::string>(str);
+}
+
+System::String^ Notification::MyForm::ToSystemString(std::string str)
+{
+	return gcnew String(str.c_str());
 }
