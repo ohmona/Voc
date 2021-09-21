@@ -1,5 +1,6 @@
 #pragma once
 
+#include "header.h"
 #include <iostream>
 #include <fstream>
 #include<iostream>
@@ -8,27 +9,21 @@
 #include <vector>
 #include <msclr\marshal_cppstd.h>
 #include <Windows.h>
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
 
-#define SPE ':'
-#define END "__FIN.omn"
-#define EXTENSION ".vcb"
-#define PATH "D:\Recording\\"
-#define FILE_PATH "Setting.txt"
-#define File_Path Setting.txt
-#define SIGN "vocabella_program_by_ohmona_0.1"
-#define DGV Notification::MyForm::dataGridview1;
-
-#define TEST Console::WriteLine("tset");
+//#define TRANSLATION_SPE ':'
+//#define WORDS_SPE '|'
+//#define END "__FIN.omn"
+//#define EXTENSION ".vcb"
+//#define PATH "D:\Recording\\"
+//#define FILE_PATH "Setting.txt"
+//#define File_Path Setting.txt
+//#define SIGN "vocabella_program_by_ohmona_0.1"
 
 #ifdef UNICODE
 #define GetCurrentDirectory GetCurrentDirectoryW
 #else
 #define GetCurrentDirectory GetCurrentDirectoryA
 #endif
-
-namespace fs = std::experimental::filesystem;
 
 namespace Notification {
 
@@ -45,23 +40,23 @@ namespace Notification {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public: System::Windows::Forms::DataGridView^ dataGridView1;
-	public: void AddItem(DataGridView^ dgv, std::string content, int index);
-	public: void ReadFile();
+	//public: void AddItem(DataGridView^ dgv, std::string content, int index);
+	//public: void ReadFile();
 	//public: void ReadFile(System::String^ path);
-	public: void SaveFile();
-	public: void ProgramFiles();
-	public: void AddRow();
-	public: void ChangePath();
-	public: void UpdatePath(std::string);
-	public: System::String^ GetPath();
-	public: void ChangePath(System::String^ str);
-	public: std::string GetProgramPath();
-	public: std::string ToStdString(System::String^ str);
-	public: System::String^ ToSystemString(std::string str);
+	//public: void SaveFile();
+	//public: void ProgramFiles();
+	//public: void AddRow();
+	//public: void ChangePath();
+	//public: void UpdatePath(std::string);
+	//public: System::String^ GetPath();
+	//public: void ChangePath(System::String^ str);
+	//public: std::string GetProgramPath();
+	//public: std::string ToStdString(System::String^ str);
+	//public: System::String^ ToSystemString(std::string str);
 
 	public:
-		int Row = 1;
-		bool shouldAddRow = true;
+		/*int Row = 1;
+		bool shouldAddRow = true;*/
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ FileMenu;
 	private: System::Windows::Forms::ToolStripMenuItem^ testToolStripMenuItem;
@@ -73,8 +68,21 @@ namespace Notification {
 	public:
 
 	public:
-		System::String^ originPath = "";
+		static void ChangeText(System::String^ text) {
+			// form->Text = text;
+		}
+		void AddRow() {
+			dataGridView1->Rows->Add();
+		}
+		/*Notification::MyForm^ form() {
+			return this;
+		}*/
 
+		// For other file
+		static Notification::MyForm^ form;
+		static MyArea::SaveFile* sf = new MyArea::SaveFile(true);
+		static MyArea::DataGridView* dgvptr = new MyArea::DataGridView();
+		static MyArea::ProgramFile* programFile = new MyArea::ProgramFile();
 	public:
 		MyForm(void)
 		{
@@ -82,9 +90,13 @@ namespace Notification {
 			//
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
-			std::cout << GetProgramPath() << std::endl;
-			ProgramFiles();
-			ReadFile();
+			//std::cout << GetProgramPath() << std::endl;
+			//ProgramFiles();
+			//ReadFile();
+			form = this;
+
+			std::cout << programFile->GetPPath() << std::endl;
+			sf->DataRead();
 		}
 
 	protected:
@@ -322,37 +334,37 @@ private: System::Void Click_LoadOnly(System::Object^ sender, System::EventArgs^ 
 }
 private: System::Void MyForm_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
 	if (e->Control && e->Shift && e->KeyValue == 83) {
-		SaveFile();
-		ChangePath();
-		ReadFile();
+		sf->DataSave();
+		programFile->ChangePath();
+		sf->DataRead();
 	}
 	else if (e->Control && e->KeyValue == 83) {
-		SaveFile();
-		ReadFile();
+		sf->DataSave();
+		sf->DataRead();
 	}
 	else if (e->Control && e->KeyValue == 70) {
-		ReadFile();
+		sf->DataRead();
 	}
 }
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void testToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	SaveFile();
-	ReadFile();
+	sf->DataSave();
+	sf->DataRead();
 }
 private: System::Void loadToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	ReadFile();
+	sf->DataRead();
 }
 private: System::Void changeDirectoryCtrlShiftSToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	SaveFile();
-	ChangePath();
-	ReadFile();
+	sf->DataSave();
+	programFile->ChangePath();
+	sf->DataRead();
 }
 private: System::Void dataGridView1_RowsAdded(System::Object^ sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^ e) {
-	Row++;
+	dgvptr->ResetRowCount();
 }
 private: System::Void dataGridView1_RowsRemoved(System::Object^ sender, System::Windows::Forms::DataGridViewRowsRemovedEventArgs^ e) {
-	Row--;
+	dgvptr->ResetRowCount();
 }
 private: System::Void version01PreleaseToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 }
@@ -363,70 +375,10 @@ private: System::Void dataGridView1_CellValueChanged(System::Object^ sender, Sys
 private: System::Void dataGridView1_CurrentCellDirtyStateChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void dataGridView1_EditingControlShowing(System::Object^ sender, System::Windows::Forms::DataGridViewEditingControlShowingEventArgs^ e) {
-	TEST
+
 }
 private: System::Void dataGridView1_CellEndEdit(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
 	
 }
 };
-}
-
-namespace MyArea {
-	std::string ToStdString(System::String^ str);
-	System::String^ ToSystemString(std::string str);
-	namespace File {
-		// 세이브 파일을 관리
-		static class SaveFile {
-		public:
-			void Save();
-			void Read();
-			void ChangeOpenedFile();
-		};
-		// 프로그램 파일 관리
-		static class ProgramFile {
-		private:
-			std::ifstream FileReader; //= FileReader.open(GetPPath() + FILE_PATH, std::ifstream::in); // warning
-			std::string buffer;
-		public:
-			void MakePFile();
-			void MakePFolder();
-			void ReadPFile();
-			void UpdateDefaultPath(); // UpdatePath()
-			System::String^ GetPathFromDialog();
-			void ChangePath(System::String^ str);
-			std::string GetPPath();
-		public:
-			ProgramFile();
-		};
-	}
-
-	namespace Data {
-		// 파일에서 나온 데이터를 정리
-		public class Content {
-		public:
-			std::string content;
-			std::vector<std::string> contents;
-		public:
-			std::string SplitContent();
-		public:
-			Content(std::string content);
-		};
-
-		// 화면에 있는 dgv
-		static class DataGridView {
-		public:
-			int Row = 0;
-		public:
-			void AddRow();
-			void AddItem(int Yindex, int Xindex);
-		};
-	}
-}
-
-std::string MyArea::ToStdString(System::String^ str) {
-	return msclr::interop::marshal_as<std::string>(str);
-}
-
-System::String^ MyArea::ToSystemString(std::string str) {
-	return gcnew String(str.c_str());
 }
