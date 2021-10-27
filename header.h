@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LangChanger.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -10,6 +11,7 @@
 #define TRANSLATION_SPE ':'
 #define WORDS_SPE '|'
 #define FILE_PATH "Setting.txt"
+#define EMPTY "~"
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 #include <experimental/filesystem>
@@ -18,12 +20,12 @@ using namespace System::Windows::Forms;
 
 namespace fs = std::experimental::filesystem;
 
-class SaveFile;
-class ProgramFile;
-class Content;
-class DataGridView;
-
 namespace MyArea {
+
+	class SaveFile;
+	class ProgramFile;
+	class Content;
+	class DataGridView;
 
 	std::string ToStdString(System::String^ str) {
 		return msclr::interop::marshal_as<std::string>(str);
@@ -56,6 +58,7 @@ namespace MyArea {
 	public:
 		std::string content;
 		std::vector<std::vector<std::string>> contents;
+		std::vector<std::string> smallContents;
 	public:
 		std::string SplitContent();
 		void SetContent(std::string content) {
@@ -76,10 +79,22 @@ namespace MyArea {
 		void AddRow();
 		void AddItem(System::String^ content, int Yindex, int Xindex);
 		void AddItem(Content words);
+
+		void SetLanguage(Content languages);
+		void SetLanguage(System::String^ lang1, System::String^ lang2);
+		std::vector<std::string> GetLanguage();
+
+		void SetMemo(Content memo);
+		std::string GetMemo();
+
 		System::Object^ GetValue(int Row, int Column);
+
 		int GetRowCount();
 		void ClearRow();
 		void ResetRowCount();
+
+		void ChangeSize(int height, int top);
+		void ChangeSize(int height, int top, int down);
 	public:
 		DataGridView() {
 			Row = 0;
@@ -147,5 +162,14 @@ namespace MyArea {
 				}
 			}
 		}
+	};
+
+	ref class Pointers {
+	public:
+		static MyArea::SaveFile* sf = new MyArea::SaveFile(true);
+		static MyArea::DataGridView* dgvptr = new MyArea::DataGridView();
+		static MyArea::ProgramFile* programFile = new MyArea::ProgramFile();
+		static System::Windows::Forms::DataGridViewTextBoxColumn^ header1;
+		static System::Windows::Forms::DataGridViewTextBoxColumn^ header2;
 	};
 }

@@ -1,5 +1,6 @@
 #include "header.h"
 #include "MyForm.h"
+#include "Langchanger.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -37,6 +38,31 @@ void MyArea::DataGridView::AddItem(Content words) {
 	}
 }
 
+void MyArea::DataGridView::SetLanguage(Content languages) {
+	MyArea::Pointers::header1->HeaderText = ToSystemString(languages.smallContents[0]);
+	MyArea::Pointers::header2->HeaderText = ToSystemString(languages.smallContents[1]);
+}
+
+void MyArea::DataGridView::SetLanguage(System::String^ lang1, System::String^ lang2) {
+	MyArea::Pointers::header1->HeaderText = lang1;
+	MyArea::Pointers::header2->HeaderText = lang2;
+}
+
+std::vector<std::string> MyArea::DataGridView::GetLanguage() {
+	std::vector<std::string> langs;
+	langs.push_back(ToStdString(MyArea::Pointers::header1->HeaderText));
+	langs.push_back(ToStdString(MyArea::Pointers::header2->HeaderText));
+	return langs;
+}
+
+void MyArea::DataGridView::SetMemo(Content memo) {
+	Notification::MyForm::form->memoBox->Text = ToSystemString(memo.content);
+}
+
+std::string MyArea::DataGridView::GetMemo() {
+	return ToStdString(Notification::MyForm::form->memoBox->Text);
+}
+
 int MyArea::DataGridView::GetRowCount() {
 	return Row;
 }
@@ -47,11 +73,21 @@ void MyArea::DataGridView::ClearRow() {
 }
 
 void MyArea::DataGridView::ResetRowCount() {
-	Row = Notification::MyForm::form->dataGridView1->Rows->Count;
+	Notification::MyForm::form->dataGridView1->Rows->Count;
 }
 
 System::Object^ MyArea::DataGridView::GetValue(int Row, int Column) {
 	return Notification::MyForm::form->dataGridView1->Rows[Row]->Cells[Column]->Value;
+}
+
+void MyArea::DataGridView::ChangeSize(int height, int top) {
+	Notification::MyForm::form->dataGridView1->Height = height;
+	Notification::MyForm::form->dataGridView1->Top = top;
+} 
+
+void MyArea::DataGridView::ChangeSize(int height, int top, int down) {
+	ChangeSize(height, top);
+	Notification::MyForm::form->dataGridView1->Top = down * (-1);
 }
 
 std::string MyArea::Content::SplitContent() {
@@ -81,6 +117,13 @@ std::string MyArea::Content::SplitContent() {
 		break;
 	case 1:
 		// deutsch:한국어
+		System::String ^ str;
+		str = ToSystemString(content);
+		array<System::String^>^ arr;
+		arr = str->Split(WORDS_SPE);
+		smallContents.resize(2);
+		smallContents[0] = ToStdString(arr[0]);
+		smallContents[1] = ToStdString(arr[1]);
 		break;
 
 	case 2:
@@ -172,7 +215,7 @@ void MyArea::ProgramFile::UpdateDefaultPath(std::string str) {
 }
 
 void MyArea::ProgramFile::ChangePath(System::String^ str) {
-	Notification::MyForm::form->sf->SetCurrentPath(ToStdString(str)); // error!
+	MyArea::Pointers::sf->SetCurrentPath(ToStdString(str)); // error!
 	Notification::MyForm::form->ChangeText(str);
 }
 
@@ -184,15 +227,16 @@ void MyArea::ProgramFile::ChangePath() {
 
 	DialogResult result = Picker->ShowDialog();
 	if (result == DialogResult::OK) {
-		Notification::MyForm::form->sf->SetCurrentPath(ToStdString(Picker->FileName));
-		Notification::MyForm::form->ChangeText(ToSystemString(Notification::MyForm::form->sf->currentPath));
-		std::cout << "Selected Path : " << Notification::MyForm::form->sf->currentPath << std::endl;
+		MyArea::Pointers::sf->SetCurrentPath(ToStdString(Picker->FileName));
+		Notification::MyForm::form->ChangeText(ToSystemString(MyArea::Pointers::sf->currentPath));
+		std::cout << "Selected Path : " << MyArea::Pointers::sf->currentPath << std::endl;
 	}
 }
 
 // dgv 에서 데이터 수집 후 한 줄로 묶기
 std::string MyArea::SaveFile::MakeDataToSave() {
-	int Row = Notification::MyForm::form->dgvptr->GetRowCount();
+	MyArea::DataGridView* dgv = MyArea::Pointers::dgvptr;
+	int Row = dgv->GetRowCount();
 	std::string saveData;
 	for (int i = 0; i < Row; i++) {
 		System::String^ first;
@@ -201,13 +245,19 @@ std::string MyArea::SaveFile::MakeDataToSave() {
 		std::string str2 = "";
 		bool succeed = false;
 
-		if (Notification::MyForm::form->dgvptr->GetValue(i, 0)) {
-			first = Notification::MyForm::form->dgvptr->GetValue(i, 0)->ToString();
+		/*
+		* 저장 방식 : dgv 에서 매 칸마다에서 값을 불러옴
+		* 희망 사항 : dgv가 업데이트 될때마다 SaveFile 클래스에 있는 Content words 인스턴스를 업데이트를 해주면서
+		*			 저장할때는 그 인스턴스를 이용하여 저장
+		*/
+
+		if (dgv->GetValue(i, 0)) {
+			first = dgv->GetValue(i, 0)->ToString();
 			str1 = ToStdString(first);
 			succeed = true;
 		}
-		if (Notification::MyForm::form->dgvptr->GetValue(i, 1)) {
-			second = Notification::MyForm::form->dgvptr->GetValue(i, 1)->ToString();
+		if (dgv->GetValue(i, 1)) {
+			second = dgv->GetValue(i, 1)->ToString();
 			str2 = ToStdString(second);
 			succeed = true;
 		}
@@ -220,7 +270,7 @@ std::string MyArea::SaveFile::MakeDataToSave() {
 }
 
 void MyArea::SaveFile::DataRead() {
-	Notification::MyForm::form->programFile->UpdateDefaultPath(currentPath);
+	MyArea::Pointers::programFile->UpdateDefaultPath(currentPath);
 	System::String^ tempPath = ToSystemString(currentPath);
 
 	std::ifstream fileReader;
@@ -231,7 +281,7 @@ void MyArea::SaveFile::DataRead() {
 	if (fileReader.is_open()) {
 		std::cout << "파일이 열렸습니다 : inputStream" << std::endl;
 		std::cout << "경료 : " << ToStdString(tempPath) << std::endl;
-		Notification::MyForm::form->dgvptr->ClearRow();
+		MyArea::Pointers::dgvptr->ClearRow();
 
 		int index = 0;
 		while (!fileReader.eof()) {
@@ -242,19 +292,25 @@ void MyArea::SaveFile::DataRead() {
 				Console::WriteLine("content section");
 				words->SetContent(content);
 				words->SplitContent();
-				Notification::MyForm::form->dgvptr->AddItem(*words);
+				MyArea::Pointers::dgvptr->AddItem(*words);
 				// AddItem
 				break;
 			case 1:
 				language->SetContent(content);
+				language->SplitContent();
 				Console::WriteLine("language section");
 				std::cout << content << std::endl;
-				// TODO: 언어설정 기능
+				MyArea::Pointers::dgvptr->SetLanguage(*language);
 				// Set Language
 				break;
 			case 2:
-				Console::WriteLine("memo section");
 				memo->SetContent(content);
+				Console::WriteLine("memo section");
+				if(content == EMPTY) std::cout << "memo doesn't exist!" << std::endl;
+				else {
+					std::cout << content << std::endl;
+					MyArea::Pointers::dgvptr->SetMemo(*memo);
+				}
 				// SetMemo
 				break;
 			default:
@@ -270,7 +326,7 @@ void MyArea::SaveFile::DataRead() {
 		std::cout << "파일을 생성합니다" << std::endl;
 		DataSave(); // deprecated
 	}
-	Notification::MyForm::form->dgvptr->ResetRowCount();
+	MyArea::Pointers::dgvptr->ResetRowCount();
 	fileReader.close();
 }
 
@@ -286,9 +342,19 @@ void MyArea::SaveFile::DataSave() {
 	if (out.is_open()) {
 		std::cout << "파일이 열렸습니다 : outputStream" << std::endl;
 		std::cout << "경로 : " << currentPath << std::endl;
+		// words저장
 		std::string savedata = MyArea::SaveFile::MakeDataToSave();
 		std::cout << savedata << std::endl;
-		out << savedata;
+		out << savedata << "\n";
+
+		// language저장 임시!!
+		std::vector<std::string> langs = MyArea::Pointers::dgvptr->GetLanguage();
+		out << langs[0] << WORDS_SPE << langs[1] << "\n";
+
+		// memo저장
+		std::string memosavedata = MyArea::Pointers::dgvptr->GetMemo();
+		if(memosavedata == "") out << EMPTY << "\n";
+		else out << memosavedata << "\n";
 
 		System::String^ message = "File successfully saved in \n" + ToSystemString(currentPath);
 		System::Windows::Forms::MessageBox::Show(message, "Congratulations!");
@@ -301,5 +367,29 @@ void MyArea::SaveFile::DataSave() {
 }
 
 void MyArea::SaveFile::ChangeOpenedFile() {
-	Notification::MyForm::form->programFile->ChangePath();
+	MyArea::Pointers::programFile->ChangePath();
+}
+
+void Notification::LangChanger::ButtonClick() {
+	if (textBox1->Text != " ") {
+		count++;
+		if (count == 1) {
+			lang1 = textBox1->Text;
+			this->label1->Text = L"please type your second language";
+			this->textBox1->Text = "";
+			this->textBox1->Select();
+		}
+		else if (count == 2) {
+			lang2 = textBox1->Text;
+			count = 0;
+			MyArea::Pointers::dgvptr->SetLanguage(lang1, lang2);
+			this->label1->Text = L"please type your first language";
+			this->textBox1->Text = "";
+			delete this;
+		}
+	}
+	else {
+		System::String^ message = "Please type your language in textbox";
+		System::Windows::Forms::MessageBox::Show(message, "Warning");
+	}
 }
