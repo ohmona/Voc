@@ -73,7 +73,7 @@ namespace MyArea {
 
 	// data grid view를 관리함
 	class DataGridView {
-	private:
+	public:
 		int Row;
 	public:
 		void AddRow();

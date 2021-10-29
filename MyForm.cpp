@@ -83,7 +83,7 @@ System::Object^ MyArea::DataGridView::GetValue(int Row, int Column) {
 void MyArea::DataGridView::ChangeSize(int height, int top) {
 	Notification::MyForm::form->dataGridView1->Height = height;
 	Notification::MyForm::form->dataGridView1->Top = top;
-} 
+}
 
 void MyArea::DataGridView::ChangeSize(int height, int top, int down) {
 	ChangeSize(height, top);
@@ -280,7 +280,7 @@ void MyArea::SaveFile::DataRead() {
 
 	if (fileReader.is_open()) {
 		std::cout << "파일이 열렸습니다 : inputStream" << std::endl;
-		std::cout << "경료 : " << ToStdString(tempPath) << std::endl;
+		std::cout << "경로 : " << ToStdString(tempPath) << std::endl;
 		MyArea::Pointers::dgvptr->ClearRow();
 
 		int index = 0;
@@ -289,7 +289,8 @@ void MyArea::SaveFile::DataRead() {
 			getline(fileReader, content);
 			switch (index) {
 			case 0:
-				Console::WriteLine("content section");
+				//Console::WriteLine("content section");
+				//std::cout << content << std::endl;
 				words->SetContent(content);
 				words->SplitContent();
 				MyArea::Pointers::dgvptr->AddItem(*words);
@@ -298,17 +299,17 @@ void MyArea::SaveFile::DataRead() {
 			case 1:
 				language->SetContent(content);
 				language->SplitContent();
-				Console::WriteLine("language section");
-				std::cout << content << std::endl;
+				//Console::WriteLine("language section");
+				//std::cout << content << std::endl;
 				MyArea::Pointers::dgvptr->SetLanguage(*language);
 				// Set Language
 				break;
 			case 2:
 				memo->SetContent(content);
-				Console::WriteLine("memo section");
+				//Console::WriteLine("memo section");
 				if(content == EMPTY) std::cout << "memo doesn't exist!" << std::endl;
 				else {
-					std::cout << content << std::endl;
+					//std::cout << content << std::endl;
 					MyArea::Pointers::dgvptr->SetMemo(*memo);
 				}
 				// SetMemo

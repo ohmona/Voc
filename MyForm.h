@@ -100,6 +100,8 @@ namespace Notification {
 
 			std::cout << MyArea::Pointers::programFile->GetPPath() << std::endl;
 			MyArea::Pointers::sf->DataRead();
+
+			KeyPreview = true;
 		}
 
 	protected:
@@ -236,10 +238,14 @@ namespace Notification {
 				static_cast<System::Byte>(0)));
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle7;
 			this->dataGridView1->RowTemplate->Height = 26;
-			this->dataGridView1->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellContentClick);
+			this->dataGridView1->CellValidating += gcnew System::Windows::Forms::DataGridViewCellValidatingEventHandler(this, &MyForm::dataGridView1_CellValidating);
+			this->dataGridView1->CellValueChanged += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellValueChanged);
+			this->dataGridView1->CellValuePushed += gcnew System::Windows::Forms::DataGridViewCellValueEventHandler(this, &MyForm::dataGridView1_CellValuePushed);
+			this->dataGridView1->CurrentCellDirtyStateChanged += gcnew System::EventHandler(this, &MyForm::dataGridView1_CurrentCellDirtyStateChanged);
 			this->dataGridView1->RowsAdded += gcnew System::Windows::Forms::DataGridViewRowsAddedEventHandler(this, &MyForm::dataGridView1_RowsAdded);
 			this->dataGridView1->RowsRemoved += gcnew System::Windows::Forms::DataGridViewRowsRemovedEventHandler(this, &MyForm::dataGridView1_RowsRemoved);
 			this->dataGridView1->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
+			this->dataGridView1->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &MyForm::dataGridView1_KeyPress);
 			// 
 			// Deutsch
 			// 
@@ -349,6 +355,7 @@ namespace Notification {
 			this->MaximizeBox = false;
 			this->Name = L"MyForm";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
+			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
@@ -379,6 +386,7 @@ private: System::Void MyForm_KeyDown(System::Object^ sender, System::Windows::Fo
 	else if (e->Control && e->KeyValue == 70) {
 		MyArea::Pointers::sf->DataRead();
 	}
+	else { }
 }
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 }
@@ -409,13 +417,11 @@ private: System::Void changeLanguagesToolStripMenuItem_Click(System::Object^ sen
 private: System::Void showMemoToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (showMemoToolStripMenuItem->Checked) {
 		// 보이게
-		Console::WriteLine("checked");
 		memoBox->Visible = true;
 		MyArea::Pointers::dgvptr->ChangeSize(528, 62);
 	}
 	else {
 		// 안보이게
-		Console::WriteLine("unchecked");
 		memoBox->Visible = false;
 		MyArea::Pointers::dgvptr->ChangeSize(563, 27);
 	}
@@ -423,6 +429,20 @@ private: System::Void showMemoToolStripMenuItem_Click(System::Object^ sender, Sy
 private: System::Void dataGridView1_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
 }
 private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void dataGridView1_CurrentCellDirtyStateChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void dataGridView1_CellValueChanged(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+
+}
+private: System::Void dataGridView1_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+
+}
+private: System::Void dataGridView1_CellValidating(System::Object^ sender, System::Windows::Forms::DataGridViewCellValidatingEventArgs^ e) {
+
+}
+private: System::Void dataGridView1_CellValuePushed(System::Object^ sender, System::Windows::Forms::DataGridViewCellValueEventArgs^ e) {
+
 }
 };
 }
