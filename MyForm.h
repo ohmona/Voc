@@ -59,7 +59,7 @@ namespace Vocabella {
 
 	public:
 		void ChangeText(System::String^ text) {
-			//form->Text = text;
+			this->Text = text;
 		}
 		void AddRow() {
 			dataGridView1->Rows->Add();
@@ -71,6 +71,9 @@ namespace Vocabella {
 	/* Code Starts Here */
 	public:
 		MyForm(void);
+
+		void LoadData();
+		void ChangePath();
 
 		void Convert();
 		void SetLanguage();
@@ -200,6 +203,7 @@ namespace Vocabella {
 			this->dataGridView1->RowTemplate->Height = 26;
 			this->dataGridView1->Size = System::Drawing::Size(354, 528);
 			this->dataGridView1->TabIndex = 0;
+			this->dataGridView1->CellContentClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellContentClick_1);
 			this->dataGridView1->CellValidating += gcnew System::Windows::Forms::DataGridViewCellValidatingEventHandler(this, &MyForm::dataGridView1_CellValidating);
 			this->dataGridView1->CellValueChanged += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellValueChanged);
 			this->dataGridView1->CellValuePushed += gcnew System::Windows::Forms::DataGridViewCellValueEventHandler(this, &MyForm::dataGridView1_CellValuePushed);
@@ -356,26 +360,15 @@ private: System::Void Click_LoadOnly(System::Object^ sender, System::EventArgs^ 
 private: System::Void MyForm_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
 	if (e->Control && e->Shift && e->KeyValue == 83) {
 		saveF->DataSave();
-		programF->ChangePath();
-		saveF->SetCurrentPath(programF->current_path);
-		ChangeText(toSystemStr(programF->current_path));
-		saveF->DataRead();
-		Convert();
-		SetLanguage();
-		SetMemo();
+		ChangePath();
+		LoadData();
 	}
 	else if (e->Control && e->KeyValue == 83) {
 		saveF->DataSave();
-		saveF->DataRead();
-		Convert();
-		SetLanguage();
-		SetMemo();
+		LoadData();
 	}
 	else if (e->Control && e->KeyValue == 70) {
-		saveF->DataRead();
-		Convert();
-		SetLanguage();
-		SetMemo();
+		LoadData();
 	}
 	else {}
 }
@@ -383,26 +376,15 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 }
 private: System::Void testToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	saveF->DataSave();
-	saveF->DataRead();
-	Convert();
-	SetLanguage();
-	SetMemo();
+	LoadData();
 }
 private: System::Void loadToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	saveF->DataRead();
-	Convert();
-	SetLanguage();
-	SetMemo();
+	LoadData();
 }
 private: System::Void changeDirectoryCtrlShiftSToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	saveF->DataSave();
-	programF->ChangePath();
-	saveF->SetCurrentPath(programF->current_path);
-	ChangeText(toSystemStr(programF->current_path));
-	saveF->DataRead();
-	Convert();
-	SetLanguage();
-	SetMemo();
+	ChangePath();
+	LoadData();
 }
 private: System::Void dataGridView1_RowsAdded(System::Object^ sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^ e) {
 	dgv->Row++;
@@ -440,9 +422,13 @@ private: System::Void dataGridView1_CellValidating(System::Object^ sender, Syste
 
 }
 private: System::Void dataGridView1_CellValuePushed(System::Object^ sender, System::Windows::Forms::DataGridViewCellValueEventArgs^ e) {
-
+	int row = e->RowIndex;
+	int column = e->ColumnIndex;
+	dgv->AddItem(dataGridView1[row][column]->Value->ToString(), row, column);
 }
-	private: System::Void fileToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	}
+private: System::Void fileToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void dataGridView1_CellContentClick_1(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+}
 };
 }

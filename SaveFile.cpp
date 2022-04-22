@@ -7,10 +7,10 @@ SaveFile::SaveFile() {
 	// owo nothing is here everlast ~30%
 }
 
-// dgv 에서 데이터 수집 후 한 줄로 묶기
+/* compress data */
 std::string SaveFile::MakeDataToSave() {
 	DataGridView* dgv = dgvptr;
-	int Row = dgv->GetRowCount();
+	int Row = dgv->Row;
 	std::string saveData;
 	for (int i = 0; i < Row; i++) {
 		System::String^ first;
@@ -58,7 +58,6 @@ void SaveFile::DataRead() {
 
 		int index = 0;
 		while (!fileReader.eof()) {
-			// ToDo save 안돼는 버그 수정 + 읽기버그 있음
 			getline(fileReader, content);
 			switch (index) {
 			case 0:
@@ -96,7 +95,7 @@ void SaveFile::DataRead() {
 		std::cout << currentPath << std::endl;
 		std::cout << "파일을 열 수 없거나, 찾을 수 없습니다!" << std::endl;
 		std::cout << "파일을 생성합니다" << std::endl;
-		DataSave(); // error
+		DataSave();
 	}
 	fileReader.close();
 }
@@ -107,26 +106,29 @@ void SaveFile::SetCurrentPath(std::string str) {
 
 // Content 클래스를 사용하여 저장하는건 나중에 만들자 일단 테스트겸 해서 SaveFile에 있는 함수 사용
 void SaveFile::DataSave() {
+	/* open output stream */
 	System::String^ path = toSystemStr(currentPath);
 	std::ofstream out(currentPath);
 
 	if (out.is_open()) {
 		std::cout << "파일이 열렸습니다 : outputStream" << std::endl;
 		std::cout << "경로 : " << currentPath << std::endl;
-		// words저장
+
+		/* save compressed string at first line of the file */
 		std::string savedata = SaveFile::MakeDataToSave();
 		std::cout << savedata << std::endl;
 		out << savedata << "\n";
 
-		// language저장 임시!!
+		/* save language data using language vector */
 		std::vector<std::string> langs = dgvptr->GetLanguage();
 		out << langs[0] << WORDS_SPE << langs[1] << "\n";
 
-		// memo저장
+		/* save memo data unless it is empty */
 		std::string memosavedata = dgvptr->GetMemo();
 		if (memosavedata == "") out << EMPTY << "\n";
 		else out << memosavedata << "\n";
 
+		/* notify to user the success */
 		System::String^ message = "File successfully saved in \n" + toSystemStr(currentPath);
 		System::Windows::Forms::MessageBox::Show(message, "Congratulations!");
 		System::Console::WriteLine(path + "에 저장돼었습니다.");

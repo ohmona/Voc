@@ -47,7 +47,7 @@ MyForm::MyForm(void)
 	UpdateVersionInfo(version);
 
 	programF = new omn::ProgramFile();
-	this->Text = toSystemStr(programF->current_path);
+	ChangeText(toSystemStr(programF->current_path));
 
 	saveF = new omn::SaveFile();
 	saveF->currentPath = programF->current_path;
@@ -58,8 +58,8 @@ MyForm::MyForm(void)
 	programF->UpdateDefaultPath(programF->current_path);
 	dgv->ClearRow();
 	saveF->dgvptr = dgv;
-	saveF->DataRead();
 
+	saveF->DataRead();
 	Convert();
 	SetLanguage();
 	SetMemo();
@@ -118,6 +118,23 @@ void Vocabella::MyForm::ChangeSize(int height, int top, int down)
 {
 	ChangeSize(height, top);
 	dataGridView1->Top = down * (-1);
+}
+
+// load data from savefile and apply to visual data grid view
+void Vocabella::MyForm::LoadData()
+{
+	saveF->DataRead();
+	Convert();
+	SetLanguage();
+	SetMemo();
+}
+
+// change current path and set text
+void Vocabella::MyForm::ChangePath()
+{
+	programF->ChangePath();
+	saveF->SetCurrentPath(programF->current_path);
+	ChangeText(toSystemStr(programF->current_path));
 }
 
 void Vocabella::LangChanger::ButtonClick() { // TODO

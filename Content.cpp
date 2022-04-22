@@ -1,9 +1,6 @@
 #include "Content.h"
 #include "header.h"
 
-#define FORM Vocabella::MyForm::form
-#define PTR MyArea::Pointers
-
 using namespace omn;
 
 Content::Content(int type) {
