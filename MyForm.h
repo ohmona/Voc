@@ -1,24 +1,19 @@
 #pragma once
 
 #include "header.h"
+#include "DataGridView.h"
+#include "ProgramFile.h"
+#include "SaveFile.h"
 #include "LangChanger.h"
+
 #include <iostream>
 #include <fstream>
-#include<iostream>
-#include<fstream>
+#include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <msclr\marshal_cppstd.h>
 #include <Windows.h>
-
-//#define TRANSLATION_SPE ':'
-//#define WORDS_SPE '|'
-//#define END "__FIN.omn"
-//#define EXTENSION ".vcb"
-//#define PATH "D:\Recording\\"
-//#define FILE_PATH "Setting.txt"
-//#define File_Path Setting.txt
-//#define SIGN "vocabella_program_by_ohmona_0.1"
 
 #ifdef UNICODE
 #define GetCurrentDirectory GetCurrentDirectoryW
@@ -26,7 +21,7 @@
 #define GetCurrentDirectory GetCurrentDirectoryA
 #endif
 
-namespace Notification {
+namespace Vocabella {
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -41,23 +36,7 @@ namespace Notification {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public: System::Windows::Forms::DataGridView^ dataGridView1;
-	//public: void AddItem(DataGridView^ dgv, std::string content, int index);
-	//public: void ReadFile();
-	//public: void ReadFile(System::String^ path);
-	//public: void SaveFile();
-	//public: void ProgramFiles();
-	//public: void AddRow();
-	//public: void ChangePath();
-	//public: void UpdatePath(std::string);
-	//public: System::String^ GetPath();
-	//public: void ChangePath(System::String^ str);
-	//public: std::string GetProgramPath();
-	//public: std::string ToStdString(System::String^ str);
-	//public: System::String^ ToSystemString(std::string str);
 
-	public:
-		/*int Row = 1;
-		bool shouldAddRow = true;*/
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ FileMenu;
 	private: System::Windows::Forms::ToolStripMenuItem^ testToolStripMenuItem;
@@ -67,42 +46,47 @@ namespace Notification {
 	private: System::Windows::Forms::ToolStripMenuItem^ vocByOhmonaToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ changeLanguagesToolStripMenuItem;
 
-
 	private: System::Windows::Forms::ToolStripMenuItem^ editToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^ showMemoToolStripMenuItem;
-	public: System::Windows::Forms::TextBox^ memoBox;
+	public: System::Windows::Forms::ToolStripMenuItem^ showMemoToolStripMenuItem;
 	private:
 
+	public: System::Windows::Forms::TextBox^ memoBox;
+
+	public:
+	private:
 
 	private: System::Windows::Forms::ToolStripMenuItem^ version01PreleaseToolStripMenuItem;
-	public:
 
 	public:
-		static void ChangeText(System::String^ text) {
-			// form->Text = text;
+		void ChangeText(System::String^ text) {
+			//form->Text = text;
 		}
 		void AddRow() {
 			dataGridView1->Rows->Add();
 		}
-		// For other file
-		static Notification::MyForm^ form;
-		LangChanger^ langChanger;
-	public:
-		MyForm(void)
-		{
-			InitializeComponent();
-			//
-			//TODO: »ý¼ºÀÚ ÄÚµå¸¦ ¿©±â¿¡ Ãß°¡ÇÕ´Ï´Ù.
-			//
-			form = this;
-			MyArea::Pointers::header1 = Deutsch;
-			MyArea::Pointers::header2 = Korean;
-
-			std::cout << MyArea::Pointers::programFile->GetPPath() << std::endl;
-			MyArea::Pointers::sf->DataRead();
-
-			KeyPreview = true;
+		void UpdateVersionInfo(float version) {
+			version01PreleaseToolStripMenuItem->Text = "version " + version + " Prelease";
 		}
+
+	/* Code Starts Here */
+	public:
+		MyForm(void);
+
+		void Convert();
+		void SetLanguage();
+		void SetMemo();
+
+		void ShowMemo();
+		void HideMemo();
+
+		void ChangeSize(int height, int top);
+		void ChangeSize(int height, int top, int down);
+
+		LangChanger^ langChanger;
+
+		omn::DataGridView* dgv;
+		omn::SaveFile* saveF;
+		omn::ProgramFile* programF;
 
 	protected:
 		/// <summary>
@@ -115,35 +99,10 @@ namespace Notification {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Deutsch;
+	public: System::Windows::Forms::DataGridViewTextBoxColumn^ Deutsch;
 	protected:
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Korean;
+	public: System::Windows::Forms::DataGridViewTextBoxColumn^ Korean;
 
-
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
-
-
-	protected:
 
 	protected:
 
@@ -161,7 +120,6 @@ namespace Notification {
 		void InitializeComponent(void)
 		{
 			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle1 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
-			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle2 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle5 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
 			System::Windows::Forms::DataGridViewCellStyle^ dataGridViewCellStyle6 = (gcnew System::Windows::Forms::DataGridViewCellStyle());
@@ -193,7 +151,7 @@ namespace Notification {
 			dataGridViewCellStyle1->Font = (gcnew System::Drawing::Font(L"¸¼Àº °íµñ", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->dataGridView1->AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-			resources->ApplyResources(this->dataGridView1, L"dataGridView1");
+			this->dataGridView1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
 			this->dataGridView1->AutoSizeColumnsMode = System::Windows::Forms::DataGridViewAutoSizeColumnsMode::Fill;
 			this->dataGridView1->BackgroundColor = System::Drawing::SystemColors::ButtonFace;
 			this->dataGridView1->CellBorderStyle = System::Windows::Forms::DataGridViewCellBorderStyle::Raised;
@@ -206,6 +164,7 @@ namespace Notification {
 			dataGridViewCellStyle2->SelectionForeColor = System::Drawing::SystemColors::HighlightText;
 			dataGridViewCellStyle2->WrapMode = System::Windows::Forms::DataGridViewTriState::True;
 			this->dataGridView1->ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+			this->dataGridView1->ColumnHeadersHeight = 45;
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::DisableResizing;
 			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(2) {
 				this->Deutsch,
@@ -222,6 +181,7 @@ namespace Notification {
 			dataGridViewCellStyle5->WrapMode = System::Windows::Forms::DataGridViewTriState::False;
 			this->dataGridView1->DefaultCellStyle = dataGridViewCellStyle5;
 			this->dataGridView1->GridColor = System::Drawing::SystemColors::Control;
+			this->dataGridView1->Location = System::Drawing::Point(12, 62);
 			this->dataGridView1->Name = L"dataGridView1";
 			dataGridViewCellStyle6->Alignment = System::Windows::Forms::DataGridViewContentAlignment::MiddleLeft;
 			dataGridViewCellStyle6->BackColor = System::Drawing::SystemColors::Control;
@@ -238,6 +198,8 @@ namespace Notification {
 				static_cast<System::Byte>(0)));
 			this->dataGridView1->RowsDefaultCellStyle = dataGridViewCellStyle7;
 			this->dataGridView1->RowTemplate->Height = 26;
+			this->dataGridView1->Size = System::Drawing::Size(354, 528);
+			this->dataGridView1->TabIndex = 0;
 			this->dataGridView1->CellValidating += gcnew System::Windows::Forms::DataGridViewCellValidatingEventHandler(this, &MyForm::dataGridView1_CellValidating);
 			this->dataGridView1->CellValueChanged += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MyForm::dataGridView1_CellValueChanged);
 			this->dataGridView1->CellValuePushed += gcnew System::Windows::Forms::DataGridViewCellValueEventHandler(this, &MyForm::dataGridView1_CellValuePushed);
@@ -253,7 +215,6 @@ namespace Notification {
 			dataGridViewCellStyle3->Font = (gcnew System::Drawing::Font(L"¸¼Àº °íµñ", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(178)));
 			this->Deutsch->DefaultCellStyle = dataGridViewCellStyle3;
-			resources->ApplyResources(this->Deutsch, L"Deutsch");
 			this->Deutsch->Name = L"Deutsch";
 			this->Deutsch->Resizable = System::Windows::Forms::DataGridViewTriState::False;
 			// 
@@ -262,7 +223,6 @@ namespace Notification {
 			dataGridViewCellStyle4->Font = (gcnew System::Drawing::Font(L"¸¼Àº °íµñ", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->Korean->DefaultCellStyle = dataGridViewCellStyle4;
-			resources->ApplyResources(this->Korean, L"Korean");
 			this->Korean->Name = L"Korean";
 			this->Korean->Resizable = System::Windows::Forms::DataGridViewTriState::False;
 			// 
@@ -273,8 +233,11 @@ namespace Notification {
 				this->FileMenu, this->editToolStripMenuItem,
 					this->infoToolStripMenuItem
 			});
-			resources->ApplyResources(this->menuStrip1, L"menuStrip1");
+			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
+			this->menuStrip1->Size = System::Drawing::Size(378, 24);
+			this->menuStrip1->TabIndex = 2;
+			this->menuStrip1->Text = L"menuStrip1";
 			// 
 			// FileMenu
 			// 
@@ -283,31 +246,36 @@ namespace Notification {
 					this->changeDirectoryCtrlShiftSToolStripMenuItem, this->changeLanguagesToolStripMenuItem
 			});
 			this->FileMenu->Name = L"FileMenu";
-			resources->ApplyResources(this->FileMenu, L"FileMenu");
+			this->FileMenu->Size = System::Drawing::Size(37, 20);
+			this->FileMenu->Text = L"File";
 			// 
 			// testToolStripMenuItem
 			// 
 			this->testToolStripMenuItem->Name = L"testToolStripMenuItem";
-			resources->ApplyResources(this->testToolStripMenuItem, L"testToolStripMenuItem");
+			this->testToolStripMenuItem->Size = System::Drawing::Size(232, 22);
+			this->testToolStripMenuItem->Text = L"Save (Ctrl + S)";
 			this->testToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::testToolStripMenuItem_Click);
 			// 
 			// changeDirectoryCtrlShiftSToolStripMenuItem
 			// 
 			this->changeDirectoryCtrlShiftSToolStripMenuItem->Name = L"changeDirectoryCtrlShiftSToolStripMenuItem";
-			resources->ApplyResources(this->changeDirectoryCtrlShiftSToolStripMenuItem, L"changeDirectoryCtrlShiftSToolStripMenuItem");
+			this->changeDirectoryCtrlShiftSToolStripMenuItem->Size = System::Drawing::Size(232, 22);
+			this->changeDirectoryCtrlShiftSToolStripMenuItem->Text = L"Change File (Ctrl + Shift + S)";
 			this->changeDirectoryCtrlShiftSToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::changeDirectoryCtrlShiftSToolStripMenuItem_Click);
 			// 
 			// changeLanguagesToolStripMenuItem
 			// 
 			this->changeLanguagesToolStripMenuItem->Name = L"changeLanguagesToolStripMenuItem";
-			resources->ApplyResources(this->changeLanguagesToolStripMenuItem, L"changeLanguagesToolStripMenuItem");
+			this->changeLanguagesToolStripMenuItem->Size = System::Drawing::Size(232, 22);
+			this->changeLanguagesToolStripMenuItem->Text = L"Change Languages";
 			this->changeLanguagesToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::changeLanguagesToolStripMenuItem_Click);
 			// 
 			// editToolStripMenuItem
 			// 
 			this->editToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->showMemoToolStripMenuItem });
 			this->editToolStripMenuItem->Name = L"editToolStripMenuItem";
-			resources->ApplyResources(this->editToolStripMenuItem, L"editToolStripMenuItem");
+			this->editToolStripMenuItem->Size = System::Drawing::Size(39, 20);
+			this->editToolStripMenuItem->Text = L"Edit";
 			// 
 			// showMemoToolStripMenuItem
 			// 
@@ -315,7 +283,8 @@ namespace Notification {
 			this->showMemoToolStripMenuItem->CheckOnClick = true;
 			this->showMemoToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->showMemoToolStripMenuItem->Name = L"showMemoToolStripMenuItem";
-			resources->ApplyResources(this->showMemoToolStripMenuItem, L"showMemoToolStripMenuItem");
+			this->showMemoToolStripMenuItem->Size = System::Drawing::Size(143, 22);
+			this->showMemoToolStripMenuItem->Text = L"Show memo";
 			this->showMemoToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::showMemoToolStripMenuItem_Click);
 			// 
 			// infoToolStripMenuItem
@@ -325,35 +294,45 @@ namespace Notification {
 					this->version01PreleaseToolStripMenuItem
 			});
 			this->infoToolStripMenuItem->Name = L"infoToolStripMenuItem";
-			resources->ApplyResources(this->infoToolStripMenuItem, L"infoToolStripMenuItem");
+			this->infoToolStripMenuItem->Size = System::Drawing::Size(40, 20);
+			this->infoToolStripMenuItem->Text = L"Info";
 			// 
 			// vocByOhmonaToolStripMenuItem
 			// 
 			this->vocByOhmonaToolStripMenuItem->Name = L"vocByOhmonaToolStripMenuItem";
-			resources->ApplyResources(this->vocByOhmonaToolStripMenuItem, L"vocByOhmonaToolStripMenuItem");
+			this->vocByOhmonaToolStripMenuItem->Size = System::Drawing::Size(192, 22);
+			this->vocByOhmonaToolStripMenuItem->Text = L"Vocabella by ohmona";
 			// 
 			// version01PreleaseToolStripMenuItem
 			// 
 			this->version01PreleaseToolStripMenuItem->Name = L"version01PreleaseToolStripMenuItem";
-			resources->ApplyResources(this->version01PreleaseToolStripMenuItem, L"version01PreleaseToolStripMenuItem");
+			this->version01PreleaseToolStripMenuItem->Size = System::Drawing::Size(192, 22);
+			this->version01PreleaseToolStripMenuItem->Text = L"version 0.3 Prelease";
 			// 
 			// memoBox
 			// 
-			resources->ApplyResources(this->memoBox, L"memoBox");
+			this->memoBox->Font = (gcnew System::Drawing::Font(L"¸¼Àº °íµñ", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->memoBox->Location = System::Drawing::Point(12, 27);
 			this->memoBox->Name = L"memoBox";
+			this->memoBox->Size = System::Drawing::Size(354, 29);
+			this->memoBox->TabIndex = 4;
 			this->memoBox->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged);
 			// 
 			// MyForm
 			// 
-			resources->ApplyResources(this, L"$this");
+			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->ClientSize = System::Drawing::Size(378, 602);
 			this->Controls->Add(this->memoBox);
 			this->Controls->Add(this->dataGridView1);
 			this->Controls->Add(this->menuStrip1);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+			this->KeyPreview = true;
 			this->MainMenuStrip = this->menuStrip1;
 			this->MaximizeBox = false;
 			this->Name = L"MyForm";
+			this->Text = L"Voc";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &MyForm::MyForm_KeyDown);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
@@ -364,7 +343,6 @@ namespace Notification {
 
 		}
 #pragma endregion
-
 private: System::Void richTextBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void Click_Save(System::Object^ sender, System::EventArgs^ e) {
@@ -373,40 +351,64 @@ private: System::Void Click_Load(System::Object^ sender, System::Windows::Forms:
 }
 private: System::Void Click_LoadOnly(System::Object^ sender, System::EventArgs^ e) {
 }
+#define PTRS MyArea::Pointers::
+
 private: System::Void MyForm_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
 	if (e->Control && e->Shift && e->KeyValue == 83) {
-		MyArea::Pointers::sf->DataSave();
-		MyArea::Pointers::programFile->ChangePath();
-		MyArea::Pointers::sf->DataRead();
+		saveF->DataSave();
+		programF->ChangePath();
+		saveF->SetCurrentPath(programF->current_path);
+		ChangeText(toSystemStr(programF->current_path));
+		saveF->DataRead();
+		Convert();
+		SetLanguage();
+		SetMemo();
 	}
 	else if (e->Control && e->KeyValue == 83) {
-		MyArea::Pointers::sf->DataSave();
-		MyArea::Pointers::sf->DataRead();
+		saveF->DataSave();
+		saveF->DataRead();
+		Convert();
+		SetLanguage();
+		SetMemo();
 	}
 	else if (e->Control && e->KeyValue == 70) {
-		MyArea::Pointers::sf->DataRead();
+		saveF->DataRead();
+		Convert();
+		SetLanguage();
+		SetMemo();
 	}
-	else { }
+	else {}
 }
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void testToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	MyArea::Pointers::sf->DataSave();
-	MyArea::Pointers::sf->DataRead();
+	saveF->DataSave();
+	saveF->DataRead();
+	Convert();
+	SetLanguage();
+	SetMemo();
 }
 private: System::Void loadToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	MyArea::Pointers::sf->DataRead();
+	saveF->DataRead();
+	Convert();
+	SetLanguage();
+	SetMemo();
 }
 private: System::Void changeDirectoryCtrlShiftSToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	MyArea::Pointers::sf->DataSave();
-	MyArea::Pointers::programFile->ChangePath();
-	MyArea::Pointers::sf->DataRead();
+	saveF->DataSave();
+	programF->ChangePath();
+	saveF->SetCurrentPath(programF->current_path);
+	ChangeText(toSystemStr(programF->current_path));
+	saveF->DataRead();
+	Convert();
+	SetLanguage();
+	SetMemo();
 }
 private: System::Void dataGridView1_RowsAdded(System::Object^ sender, System::Windows::Forms::DataGridViewRowsAddedEventArgs^ e) {
-	MyArea::Pointers::dgvptr->ResetRowCount();
+	dgv->Row++;
 }
 private: System::Void dataGridView1_RowsRemoved(System::Object^ sender, System::Windows::Forms::DataGridViewRowsRemovedEventArgs^ e) {
-	MyArea::Pointers::dgvptr->ResetRowCount();
+	dgv->Row--;
 }
 private: System::Void changeLanguagesToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	langChanger = gcnew LangChanger;
@@ -416,14 +418,10 @@ private: System::Void changeLanguagesToolStripMenuItem_Click(System::Object^ sen
 }
 private: System::Void showMemoToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (showMemoToolStripMenuItem->Checked) {
-		// º¸ÀÌ°Ô
-		memoBox->Visible = true;
-		MyArea::Pointers::dgvptr->ChangeSize(528, 62);
+		ShowMemo();
 	}
 	else {
-		// ¾Èº¸ÀÌ°Ô
-		memoBox->Visible = false;
-		MyArea::Pointers::dgvptr->ChangeSize(563, 27);
+		HideMemo();
 	}
 }
 private: System::Void dataGridView1_CellContentClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
@@ -444,5 +442,7 @@ private: System::Void dataGridView1_CellValidating(System::Object^ sender, Syste
 private: System::Void dataGridView1_CellValuePushed(System::Object^ sender, System::Windows::Forms::DataGridViewCellValueEventArgs^ e) {
 
 }
+	private: System::Void fileToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+	}
 };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Notification {
+namespace Vocabella {
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -115,11 +115,10 @@ namespace Notification {
 			this->KeyUp += gcnew System::Windows::Forms::KeyEventHandler(this, &LangChanger::LangChanger_KeyUp);
 			this->ResumeLayout(false);
 			this->PerformLayout();
-
 		}
 #pragma endregion
-	private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
-	}
+		private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+		}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 		ButtonClick();
 	}
@@ -131,5 +130,5 @@ private: System::Void textBox1_KeyUp(System::Object^ sender, System::Windows::Fo
 	}
 	// TODO enter 눌렀을때 넘어가는거랑 창 사이즈 변경하는거 막기, 강제종료나 다른 방법으로 종료됐을때 사라지는 버그수정
 }
-};
+	};
 }
